@@ -183,17 +183,13 @@ Useful complement to Options C or D but insufficient as standalone solution.
 
 ## Decision
 
-Adopt **Option C – OpenAPI as the canonical API contract**, with the following approach:
+Adopt **Option B – Shared Type Definitions Package** as the API contract approach for now, with the following implementation:
 
-1. Maintain an OpenAPI specification as the single source of truth.
-2. Generate:
-   - Backend interfaces or request/response validators.
-   - Frontend typed API client.
-3. Enforce breaking-change detection in CI via:
-   - Schema diff checks.
-   - Compatibility validation tools.
-4. Publish auto-generated API documentation.
-5. Consider introducing consumer-driven contract testing later as an enhancement.
+1. Create a shared TypeScript package (e.g., `@company/api-types`) containing DTOs.
+2. Consume these shared types in both backend controllers and frontend API clients.
+3. Validate compatibility primarily through TypeScript compilation in CI.
+4. Keep endpoint documentation in existing team channels (Jira/Confluence) during initial rollout.
+5. Revisit OpenAPI or contract testing only if scaling pressures increase.
 
 ---
 
@@ -201,26 +197,28 @@ Adopt **Option C – OpenAPI as the canonical API contract**, with the following
 
 ### Positive
 
-- Breaking changes detectable during build/CI.
-- Clear centralized documentation.
-- Easier onboarding.
-- Enables future external consumers.
-- Improves long-term scalability.
+- Compile-time DTO alignment for current frontend and backend team.
+- Low adoption cost and fast rollout.
+- Minimal tooling and governance overhead.
+- Keeps current developer workflow mostly unchanged.
 
 ### Negative
 
-- Increased initial setup cost.
-- Requires governance and review discipline.
-- Slightly slower iteration during early adoption.
+- No language-agnostic contract for non-TypeScript consumers.
+- No authoritative, auto-generated API documentation.
+- Release coupling risk between frontend and backend.
+- Limited support for future external consumers without additional rework.
+- Breaking changes outside shared DTOs can still slip through.
 
 ---
 
 ## Migration Plan (High-Level)
 
-1. Pilot with one critical endpoint.
-2. Introduce OpenAPI spec alongside existing controllers.
-3. Add code generation and CI validation.
-4. Gradually migrate remaining endpoints.
+1. Create the shared `api-types` package in the current repository/monorepo.
+2. Extract request/response DTOs for the top 5 most-used endpoints.
+3. Update backend and frontend code to import shared DTOs.
+4. Add TypeScript build checks in CI to fail on type mismatches.
+5. Continue documenting endpoint behavior manually until further notice.
 
 ---
 

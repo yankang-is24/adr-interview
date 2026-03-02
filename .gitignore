@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# JetBrains IDE
+.idea/
+*.iml
+
+# Editor backups
+*~
